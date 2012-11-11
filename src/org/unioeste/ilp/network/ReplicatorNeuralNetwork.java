@@ -1,7 +1,7 @@
 package org.unioeste.ilp.network;
 
-
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.engine.network.activation.ActivationRamp;
@@ -18,7 +18,7 @@ public class ReplicatorNeuralNetwork extends AbstractNeuralNetwork {
 		construct(numInputs, hiddenLayers, new ActivationSigmoid(), true);
 	}
 	
-	public ReplicatorNeuralNetwork(File file) {
+	public ReplicatorNeuralNetwork(File file) throws FileNotFoundException {
 		super(file);
 	}
 	
@@ -45,7 +45,8 @@ public class ReplicatorNeuralNetwork extends AbstractNeuralNetwork {
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, hiddenLayers[2])); // Hidden layer 4
 	}
 	
-	public double getTrainError() {
-		return training.getError();
-	}
+	public static final double [] input_low_norm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	public static final double [] input_high_norm = {1, 1, 5000, 1, 1, 5000, 1, 1, 5000, 1, 1, 5000, 1, 1, 5000, 1, 1};
+	public static final double [] output_low_norm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	public static final double [] output_high_norm = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 }
