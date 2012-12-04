@@ -1,6 +1,5 @@
 package org.unioeste.ilp.network;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -15,6 +14,29 @@ import org.encog.neural.NeuralNetworkError;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.persist.EncogDirectoryPersistence;
 
+/**
+ * Abstract class that models the neural networks used on
+ * trainings by the ILPNetworkTraining project and Android
+ * application IntelligentLockPattern.
+ * 
+ * Provides the basics operations and attributes presented on a network as
+ * number of inputs units, number of output units, number of hidden layers 
+ * and units on each layer, permited max error on the training, 
+ * max number of iterations and utilized training method.
+ * 
+ * Presents methods for saving (save) and loading (load) the network 
+ * trained on a text file.
+ * 
+ * Uses the Encog Framework {http://www.heatonresearch.com/encog} 
+ * to build the differents configurations of the networks.
+ * The BasicNetwork class is used as the base structure
+ * for all the network used on the job.
+ * 
+ * The permited max error on the training default is 0.1.
+ * 
+ * @author Lucas AndrŽ de Alencar
+ *
+ */
 public abstract class AbstractNeuralNetwork {
 	
 	protected static final double MAX_ERROR = 0.1;
@@ -31,12 +53,31 @@ public abstract class AbstractNeuralNetwork {
 	
 	protected double trainError;
 	
+	/**
+	 * Constructor used on the construction of a new network structure.
+	 * 
+	 * The hidden layers should be specified as an array where each position
+	 * represents a new layer and the number contained on the position represents
+	 * the number of units on the layer.
+	 * 
+	 * Ex: [5, 3] => 2 hidden layers. The first one has 5 units and the second one has 3 units.
+	 * 
+	 * @param numInputs Number of input units
+	 * @param hiddenLayers Array with the number of units on each hidden layer
+	 * @param numOutputs Number of output units
+	 */
 	public AbstractNeuralNetwork(int numInputs, int[] hiddenLayers, int numOutputs) {
 		this.numInputs = numInputs;
 		this.hiddenLayers = hiddenLayers;
 		this.numOutputs = numOutputs;
 	}
 	
+	/**
+	 * Constructor that loads the infos on the network from a file.
+	 * 
+	 * @param file File used to load the network info
+	 * @throws FileNotFoundException
+	 */
 	public AbstractNeuralNetwork(File file) throws FileNotFoundException {
 		load(file);
 		numInputs = network.getInputCount();
@@ -71,10 +112,24 @@ public abstract class AbstractNeuralNetwork {
 		return training;
 	}
 	
+	/**
+	 * Inserts the input values on the network and computes the results
+	 * returning an array of values from all the output layer's units.
+	 * 
+	 * @param input Values inserted on network input
+	 * @return Network's computation resulted from the input values
+	 */
 	public MLData compute(MLDataPair input) {
 		return network.compute(input.getInput());
 	}
 	
+	/**
+	 * Inserts the input values on the network and computes the results
+	 * returning an array of values from all the output layer's units.
+	 * 
+	 * @param input Values inserted on network input
+	 * @return Network's computation resulted from the input values
+	 */
 	public double[] compute(double [] input) {
 		if (input.length != numInputs) throw new IllegalStateException("Input size isn't match with Number of Inputs defined.");
 		double [] output = new double[input.length];
@@ -104,6 +159,14 @@ public abstract class AbstractNeuralNetwork {
 		return this.max_iterations;
 	}
 	
+	/**
+	 * Calculates the MSE (Mean Squared Error) based
+	 * expected ideal and the resulted output.
+	 * 
+	 * @param ideal Values expected as output
+	 * @param output Values resluted as output
+	 * @return double MSE
+	 */
 	public double calculateError(MLData ideal, MLData output) {
 		double sum = 0, delta = 0;
 		for (int i = 0; i < ideal.size(); i++) {
@@ -113,6 +176,14 @@ public abstract class AbstractNeuralNetwork {
 		return sum / (double) ideal.size();
 	}
 	
+	/**
+	 * Calculates the MSE (Mean Squared Error) based
+	 * expected ideal and the resulted output.
+	 * 
+	 * @param ideal Values expected as output
+	 * @param output Values resluted as output
+	 * @return double MSE
+	 */
 	public double calculateError(double [] ideal, double [] output) {
 		double sum = 0, delta = 0;
 		for (int i = 0; i < ideal.length; i++) {
@@ -144,22 +215,38 @@ public abstract class AbstractNeuralNetwork {
 			System.out.println("Training = " + this.getTrainStrategy().getClass().getName());
 	}
 	
+	/**
+	 * Saves the info contained on the class on text files.
+	 * The network is saved on file_name.network and the
+	 * training error is saved on file_name.training.
+	 * 
+	 * @param file
+	 * @throws IOException
+	 */
 	public void save(File file) throws IOException {
 		File networkFile = new File(file.getAbsolutePath() + ".network");
 		EncogDirectoryPersistence.saveObject(networkFile, network);
 		
-		File trainFile = new File(file.getAbsolutePath() + ".train");
-		FileWriter writer = new FileWriter(trainFile);
+		File trainingFile = new File(file.getAbsolutePath() + ".training");
+		FileWriter writer = new FileWriter(trainingFile);
 		writer.write(String.format(Locale.US, "%.20f", getTrainError()));
 		writer.close();
 	}
 	
+	/**
+	 * Loads the info stored in files on the class.
+	 * The network is loaded from file_name.network and the
+	 * training error is loaded from file_name.training.
+	 * 
+	 * @param file
+	 * @throws FileNotFoundException
+	 */
 	private void load(File file) throws FileNotFoundException {
 		File networkFile = new File(file.getAbsolutePath() + ".network");
 		this.network = (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile);
 		
-		File trainFile = new File(file.getAbsolutePath() + ".train");
-		Scanner scanner = new Scanner(trainFile);
+		File trainingFile = new File(file.getAbsolutePath() + ".training");
+		Scanner scanner = new Scanner(trainingFile);
 		this.trainError = new Double(scanner.next());
 		scanner.close();
 	}

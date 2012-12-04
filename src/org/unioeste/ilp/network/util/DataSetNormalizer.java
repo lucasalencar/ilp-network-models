@@ -1,5 +1,12 @@
 package org.unioeste.ilp.network.util;
 
+/**
+ * Class responsible for the data normalization, 
+ * used before any training or tests of networks.
+ * 
+ * @author Lucas André de Alencar
+ *
+ */
 public class DataSetNormalizer {
 	public static double normalize(double input_low, double input_high, double output_low, double output_high, double value) {
 		return ((value - input_low) / (input_high - input_low) * (output_high - output_low) + output_low);
