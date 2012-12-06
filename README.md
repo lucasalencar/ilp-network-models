@@ -14,8 +14,7 @@ ILP Network Models
 
 Includes the [Encog Framework](http://www.heatonresearch.com/encog) on the libs folder that models the networks used on the project.
 
-
 The others sub projects:
-	* ILP Models Generator
-	* ILP Network Training
-	* Intelligent Lock Pattern
+*	[ILP Models Generator](https://github.com/lucasandre/ilp-models-generator)
+*	[ILP Network Training](https://github.com/lucasandre/ilp-network-training)
+*	[Intelligent Lock Pattern](https://github.com/lucasandre/intelligent-lock-pattern)
